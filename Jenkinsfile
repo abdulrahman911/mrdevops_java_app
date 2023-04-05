@@ -37,15 +37,27 @@ pipeline{
             }
         }
 
-        stage('Sonarqube StaticCode Analysis'){
+        stage('Static Code Analysis: Sonarqube '){
             when { expression { params.action == 'create' } }
             steps{
-                script{
+               
                     def SonarqubeCredentialsId = 'sonarqube-api'
                     staticCodeAnalysis(SonarqubeCredentialsId)
+                
+            }
+        }
+
+        stage('Quality Gate Status Check: Sonarqube'){
+            when { expression { params.action == 'create'} }
+            steps{
+                script {
+                        
+                    def SonarqubeCredentialsId = 'sonarqube-api'
+                    qualityGateStatus(SonarqubeCredentialsId)
                 }
             }
         }
+
 
     }
 
