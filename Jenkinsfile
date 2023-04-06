@@ -59,6 +59,17 @@ pipeline{
             }
         }
 
+        stage('Maven Build'){
+            while { expression { params.action == 'create' } }
+            steps{
+                script{
+                    mvnBuild()
+                }
+
+            }
+        }
+
+
 
     }
 
