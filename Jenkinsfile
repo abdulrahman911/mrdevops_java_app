@@ -89,6 +89,16 @@ pipeline{
                     dockerImageScan("${params.DockerHubUser}", "${params.ProjectName}", "${params.ImageTag}")
                 }
             }
-        }        
+        }   
+        stage("Docker Image Push: DockerHub"){
+            when { expression { params.action == 'create'} }
+            steps{
+                script{
+
+                    dockerImagePush("${params.DockerHubUser}", "${params.ProjectName}", "${params.ImageTag}")
+                }
+            }
+        } 
+
     }
 }
