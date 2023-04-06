@@ -5,9 +5,9 @@ pipeline{
 
   parameters{
     choice(name: 'action', choices: 'create\ndelete', description: 'Choose Create/Destroy ')
-    string(name: 'DockerHubUser', description: "name of the dockerHub account", defaultValue: 'rahman777')
-    string(name: 'ProjectName', description: "name of the project", defaultValue: 'javapp')
-    string(name: 'ImageTag', description: "Image Tag", defaultValue: 'v1')
+    string(name: 'aws_account_id', description: "name of the aws account id", defaultValue: '200955153941')
+    string(name: 'region', description: "name of the aws region", defaultValue: 'ap-south-1')
+    string(name: 'repo_name', description: "aws ecr repo name", defaultValue: 'myjava-app')
   }
 
     stages{   
@@ -72,12 +72,12 @@ pipeline{
             }
         }
 
-        stage("Docker Image Build"){
+        stage("Docker Image Build : ECR"){
             when { expression { params.action == 'create'} }
             steps{
                 script{
 
-                    dockerBuild("${params.DockerHubUser}", "${params.ProjectName}", "${params.ImageTag}")
+                    dockerBuild("${params.aws_account_id}", "${params.region}", "${params.repo_name}")
                 }
             }
         }
@@ -86,16 +86,16 @@ pipeline{
             steps{
                 script{
 
-                    dockerImageScan("${params.DockerHubUser}", "${params.ProjectName}", "${params.ImageTag}")
+                    dockerImageScan("${params.aws_account_id}", "${params.region}", "${params.repo_name}")
                 }
             }
         }   
-        stage("Docker Image Push: DockerHub"){
+        stage("Docker Image Push: ECR"){
             when { expression { params.action == 'create'} }
             steps{
                 script{
 
-                    dockerImagePush("${params.DockerHubUser}", "${params.ProjectName}", "${params.ImageTag}")
+                    dockerImagePush("${params.aws_account_id}", "${params.region}", "${params.repo_name}")
                 }
             }
         } 
@@ -104,10 +104,10 @@ pipeline{
             steps{
                 script{
 
-                    dockerImageCleanup("${params.DockerHubUser}", "${params.ProjectName}", "${params.ImageTag}")
+                    dockerImageCleanup("${params.aws_account_id}", "${params.region}", "${params.repo_name}")
                 }
             }
         }        
 
     }
-}
+}        
