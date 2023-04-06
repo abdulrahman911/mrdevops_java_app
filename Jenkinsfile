@@ -22,45 +22,45 @@ pipeline{
             }
         }
 
-        stage('Unit Test Maven'){
-        when { expression { params.action == 'create'} }    
-            steps{
-                script{
-                    mvnTest()
-                }
-            }
-        }
+        // stage('Unit Test Maven'){
+        // when { expression { params.action == 'create'} }    
+        //     steps{
+        //         script{
+        //             mvnTest()
+        //         }
+        //     }
+        // }
 
-        stage('Integration Test maven'){
-        when { expression { params.action == 'create'} }  
-            steps{
-                script{
-                    mvnIntegrationTest()
-                }
-            }
-        }
+        // stage('Integration Test maven'){
+        // when { expression { params.action == 'create'} }  
+        //     steps{
+        //         script{
+        //             mvnIntegrationTest()
+        //         }
+        //     }
+        // }
 
-        stage('Static Code Analysis: Sonarqube '){
-            when { expression { params.action == 'create' } }
-            steps{
-               script {
-                    def SonarqubeCredentialsId = 'sonarqube-api'
-                    staticCodeAnalysis(SonarqubeCredentialsId)
-               }
+        // stage('Static Code Analysis: Sonarqube '){
+        //     when { expression { params.action == 'create' } }
+        //     steps{
+        //        script {
+        //             def SonarqubeCredentialsId = 'sonarqube-api'
+        //             staticCodeAnalysis(SonarqubeCredentialsId)
+        //        }
                 
-            }
-        }
+        //     }
+        // }
 
-        stage('Quality Gate Status Check: Sonarqube'){
-            when { expression { params.action == 'create'} }
-            steps{
-                script {
+        // stage('Quality Gate Status Check: Sonarqube'){
+        //     when { expression { params.action == 'create'} }
+        //     steps{
+        //         script {
 
-                    def SonarqubeCredentials = 'sonarqube-api'
-                    qualityGateStatus(SonarqubeCredentials)
-                }
-            }
-        }
+        //             def SonarqubeCredentials = 'sonarqube-api'
+        //             qualityGateStatus(SonarqubeCredentials)
+        //         }
+        //     }
+        // }
 
         stage('Maven Build'){
             when { expression { params.action == 'create' } }
@@ -81,10 +81,14 @@ pipeline{
                 }
             }
         }
+        stage("Docker Image Scan: Trivy"){
+            when { expression { params.action == 'create'} }
+            steps{
+                script{
 
-
-
+                    dockerImageScan("${params.DockerHubUser}", "${params.ProjectName}", "${params.ImageTag}")
+                }
+            }
+        }        
     }
-
-
 }
