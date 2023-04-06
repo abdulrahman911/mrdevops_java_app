@@ -60,7 +60,7 @@ pipeline{
         }
 
         stage('Maven Build'){
-            while { expression { params.action == 'create' } }
+            when { expression { params.action == 'create' } }
             steps{
                 script{
                     mvnBuild()
